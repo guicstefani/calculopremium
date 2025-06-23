@@ -1,0 +1,3618 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OptiCloud Premium - Enterprise Cloud Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --gold: #DCAE1D;
+            --gold-light: #F4D03F;
+            --gold-dark: #B8941A;
+            --black: #0a0a0a;
+            --dark: #141414;
+            --gray-900: #1a1a1a;
+            --gray-800: #242424;
+            --gray-700: #2e2e2e;
+            --white: #ffffff;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-hover: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --success: #4ade80;
+            --danger: #ef4444;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--black);
+            color: var(--white);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Epic Animated Background */
+        .background-container {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .background-gradient {
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(220, 174, 29, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(220, 174, 29, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 40% 20%, rgba(244, 208, 63, 0.08) 0%, transparent 30%),
+                radial-gradient(circle at 60% 60%, rgba(220, 174, 29, 0.05) 0%, transparent 50%);
+            animation: floatGradient 30s ease-in-out infinite;
+        }
+
+        @keyframes floatGradient {
+            0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+            25% { transform: translate(-30px, -30px) rotate(90deg) scale(1.1); }
+            50% { transform: translate(20px, -40px) rotate(180deg) scale(0.95); }
+            75% { transform: translate(-20px, 20px) rotate(270deg) scale(1.05); }
+        }
+
+        /* Animated Grid Background */
+        .grid-background {
+            position: absolute;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(220, 174, 29, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(220, 174, 29, 0.05) 1px, transparent 1px);
+            background-size: 100px 100px;
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(100px, 100px); }
+        }
+
+        /* Floating Orbs */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(40px);
+            opacity: 0.4;
+            animation: floatOrb 20s infinite;
+        }
+
+        .orb1 {
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, var(--gold) 0%, transparent 70%);
+            top: 10%;
+            left: 10%;
+            animation-duration: 25s;
+        }
+
+        .orb2 {
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, var(--gold-light) 0%, transparent 70%);
+            bottom: 20%;
+            right: 10%;
+            animation-duration: 30s;
+            animation-delay: -10s;
+        }
+
+        .orb3 {
+            width: 250px;
+            height: 250px;
+            background: radial-gradient(circle, var(--gold-dark) 0%, transparent 70%);
+            top: 50%;
+            left: 50%;
+            animation-duration: 35s;
+            animation-delay: -5s;
+        }
+
+        @keyframes floatOrb {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+            }
+            33% {
+                transform: translate(100px, -100px) scale(1.1);
+            }
+            66% {
+                transform: translate(-100px, 50px) scale(0.9);
+            }
+        }
+
+        /* Layout Container */
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid var(--glass-border);
+            padding: 2rem 0;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 0 1.5rem 2rem;
+            text-align: center;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--gold-light), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+        }
+
+        .logo-subtitle {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Navigation */
+        .nav-menu {
+            padding: 1.5rem 0;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.875rem 1.5rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--gold);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .nav-item:hover {
+            color: var(--white);
+            background: rgba(220, 174, 29, 0.1);
+            transform: translateX(4px);
+        }
+
+        .nav-item.active {
+            color: var(--gold);
+            background: rgba(220, 174, 29, 0.15);
+            box-shadow: inset 0 0 20px rgba(220, 174, 29, 0.1);
+        }
+
+        .nav-item.active::before {
+            transform: scaleY(1);
+        }
+
+        .nav-item:active {
+            transform: translateX(6px) scale(0.98);
+            background: rgba(220, 174, 29, 0.2);
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        /* Page Header */
+        .page-header {
+            margin-bottom: 3rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .page-title {
+            font-size: 3rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--gold-light), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .page-subtitle {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.7);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            display: flex;
+            gap: 1.5rem;
+            margin: 3rem 0;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .stat-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 1.5rem 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(220, 174, 29, 0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 40px rgba(220, 174, 29, 0.2);
+            border-color: var(--gold);
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(220, 174, 29, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .stat-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--gold);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* VM List */
+        .vm-list-container {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .vm-list {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 1.5rem;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .vm-list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .vm-list-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--gold);
+        }
+
+        .add-vm-btn {
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            border: none;
+            border-radius: 10px;
+            color: var(--black);
+            padding: 0.5rem 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .add-vm-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(220, 174, 29, 0.4);
+        }
+
+        /* VM Card */
+        .vm-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .vm-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--gold);
+            transform: translateX(4px);
+        }
+
+        .vm-card.active {
+            background: rgba(220, 174, 29, 0.1);
+            border-color: var(--gold);
+            box-shadow: 0 0 20px rgba(220, 174, 29, 0.2);
+        }
+
+        .vm-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .vm-name {
+            font-weight: 600;
+            color: var(--white);
+        }
+
+        .vm-id {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .vm-specs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .vm-cost {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--gold);
+        }
+
+        /* Configuration Panel */
+        .config-panel {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .config-section {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .config-section:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(220, 174, 29, 0.3);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            cursor: pointer;
+        }
+
+        .section-icon {
+            width: 32px;
+            height: 32px;
+            background: rgba(220, 174, 29, 0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--gold);
+        }
+
+        /* Modern Input Components */
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .modern-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: var(--white);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .modern-input:hover {
+            background: rgba(255, 255, 255, 0.07);
+            border-color: rgba(220, 174, 29, 0.3);
+        }
+
+        .modern-input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(220, 174, 29, 0.1);
+        }
+
+        /* Slider with Value */
+        .slider-container {
+            position: relative;
+        }
+
+        .slider-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .modern-slider {
+            flex: 1;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .modern-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--gold);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 10px rgba(220, 174, 29, 0.4);
+        }
+
+        .modern-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 2px 20px rgba(220, 174, 29, 0.6);
+        }
+
+        .slider-value {
+            min-width: 80px;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--gold);
+            background: rgba(220, 174, 29, 0.1);
+            padding: 0.5rem;
+            border-radius: 8px;
+            border: 1px solid rgba(220, 174, 29, 0.3);
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.1);
+            transition: 0.3s;
+            border-radius: 26px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: var(--gold);
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(24px);
+        }
+
+        /* Cost Summary */
+        .cost-summary {
+            background: linear-gradient(135deg, rgba(220, 174, 29, 0.15), rgba(220, 174, 29, 0.05));
+            border: 1px solid var(--gold);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-top: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cost-summary::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            right: -100px;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(220, 174, 29, 0.3) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .cost-breakdown {
+            display: grid;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cost-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .cost-label {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .cost-value {
+            font-weight: 600;
+            color: var(--white);
+        }
+
+        .total-cost {
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .total-label {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 0.5rem;
+        }
+
+        .total-value {
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--gold);
+            text-shadow: 0 0 30px rgba(220, 174, 29, 0.5);
+        }
+
+        /* Market Intelligence */
+        .market-section {
+            margin-top: 3rem;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+        }
+
+        .provider-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .provider-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .provider-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+
+        .provider-card:hover::before {
+            transform: translateX(100%);
+        }
+
+        .provider-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border-color: rgba(220, 174, 29, 0.3);
+        }
+
+        .provider-card.best-price {
+            background: rgba(220, 174, 29, 0.1);
+            border-color: var(--gold);
+            box-shadow: 0 0 30px rgba(220, 174, 29, 0.2);
+        }
+
+        .provider-logo {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .provider-price {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 0.5rem;
+        }
+
+        .provider-savings {
+            font-size: 0.9rem;
+            color: var(--success);
+        }
+
+        /* Mobile Menu Toggle */
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1001;
+            background: var(--gold);
+            color: var(--black);
+            border: none;
+            border-radius: 8px;
+            padding: 0.75rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-menu-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 20px rgba(220, 174, 29, 0.4);
+        }
+
+        /* Pool de Recursos Styles */
+        .pool-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .license-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .license-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .license-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(220, 174, 29, 0.3);
+        }
+
+        .license-header {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .license-price {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .license-counter {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 0.25rem;
+        }
+
+        .counter-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: rgba(220, 174, 29, 0.2);
+            color: var(--gold);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.2s ease;
+        }
+
+        .counter-btn:hover {
+            background: var(--gold);
+            color: var(--black);
+            transform: scale(1.1);
+        }
+
+        .radio-card {
+            flex: 1;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .radio-card input {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .radio-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .radio-card input:checked + .radio-content {
+            background: rgba(220, 174, 29, 0.2);
+            border-color: var(--gold);
+            box-shadow: 0 0 20px rgba(220, 174, 29, 0.3);
+        }
+
+        .pool-summary {
+            margin-top: 3rem;
+            padding: 2rem;
+            border-radius: 20px;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .summary-item {
+            background: rgba(255, 255, 255, 0.02);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .summary-label {
+            display: block;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--gold);
+            margin-bottom: 1rem;
+        }
+
+        .summary-details p,
+        .summary-costs p {
+            margin: 0.5rem 0;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .summary-details strong,
+        .summary-costs strong {
+            color: var(--white);
+        }
+
+        /* Upgrades Styles */
+        .upgrades-container {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 2rem;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .upgrades-grid {
+            display: grid;
+            gap: 3rem;
+        }
+
+        .upgrade-category {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+        }
+
+        .category-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 1.3rem;
+            color: var(--gold);
+            margin-bottom: 1.5rem;
+        }
+
+        .upgrade-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .upgrade-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upgrade-card::before {
+            content: '';
+            position: absolute;
+            top: -100%;
+            left: -100%;
+            width: 300%;
+            height: 300%;
+            background: radial-gradient(circle, rgba(220, 174, 29, 0.1) 0%, transparent 50%);
+            transition: all 0.6s ease;
+        }
+
+        .upgrade-card:hover::before {
+            top: -150%;
+            left: -150%;
+        }
+
+        .upgrade-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(220, 174, 29, 0.2);
+            border-color: var(--gold);
+        }
+
+        .upgrade-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .upgrade-card h4 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: var(--white);
+        }
+
+        .upgrade-desc {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 1rem;
+        }
+
+        .upgrade-price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 0.5rem;
+        }
+
+        .upgrade-price span {
+            font-size: 0.9rem;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .upgrade-limit {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 1rem;
+        }
+
+        /* Shopping Cart */
+        .shopping-cart {
+            position: sticky;
+            top: 2rem;
+            padding: 2rem;
+            border-radius: 20px;
+            height: fit-content;
+            max-height: calc(100vh - 4rem);
+            overflow-y: auto;
+        }
+
+        .cart-items {
+            min-height: 200px;
+            margin-bottom: 2rem;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            margin-bottom: 0.75rem;
+            transition: all 0.3s ease;
+        }
+
+        .cart-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .cart-item-name {
+            font-weight: 500;
+        }
+
+        .cart-item-details {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .cart-item-quantity {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .cart-item-price {
+            font-weight: 600;
+            color: var(--gold);
+            min-width: 100px;
+            text-align: right;
+        }
+
+        .remove-item {
+            background: none;
+            border: none;
+            color: var(--danger);
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 0.25rem;
+            transition: transform 0.2s ease;
+        }
+
+        .remove-item:hover {
+            transform: scale(1.2);
+        }
+
+        /* Proposals Styles */
+        .proposals-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .proposals-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .proposals-tabs {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .tab-btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--white);
+        }
+
+        .tab-btn.active {
+            background: rgba(220, 174, 29, 0.2);
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        .proposals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .proposal-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .proposal-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--gold), var(--gold-light));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .proposal-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .proposal-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border-color: rgba(220, 174, 29, 0.3);
+        }
+
+        .proposal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
+        .proposal-client {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.25rem;
+        }
+
+        .proposal-id {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .proposal-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: rgba(74, 222, 128, 0.2);
+            color: #4ade80;
+        }
+
+        .status-archived {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .proposal-details {
+            margin-bottom: 1rem;
+        }
+
+        .proposal-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0.5rem 0;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .proposal-info-icon {
+            width: 16px;
+            display: inline-block;
+        }
+
+        .proposal-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 1rem;
+        }
+
+        .proposal-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .proposal-actions button {
+            flex: 1;
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: rgba(255, 255, 255, 0.8);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+        }
+
+        .proposal-actions button:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: var(--gray-900);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .modal-header h2 {
+            font-size: 1.5rem;
+            color: var(--gold);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 2rem;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .modal-close:hover {
+            color: var(--white);
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            padding: 1.5rem 2rem;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* Loading State */
+        .loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .loading-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top-color: var(--gold);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: var(--black);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--white);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Page visibility */
+        .page {
+            display: none;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1400px) {
+            .upgrades-container {
+                grid-template-columns: 1fr;
+            }
+
+            .shopping-cart {
+                position: relative;
+                margin-top: 2rem;
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .vm-list-container {
+                grid-template-columns: 1fr;
+            }
+
+            .vm-list {
+                max-height: 300px;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu-toggle {
+                display: block;
+            }
+
+            .sidebar {
+                position: fixed;
+                left: -260px;
+                z-index: 1000;
+                transition: left 0.3s ease;
+            }
+
+            .sidebar.open {
+                left: 0;
+                box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+            }
+
+            .main-content {
+                padding: 4rem 1rem 1rem;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .stats-bar {
+                flex-direction: column;
+            }
+
+            .config-section {
+                padding: 1rem;
+            }
+
+            .total-value {
+                font-size: 2rem;
+            }
+
+            .upgrade-items {
+                grid-template-columns: 1fr;
+            }
+
+            .proposals-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(220, 174, 29, 0.3);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(220, 174, 29, 0.5);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 1;
+            }
+        }
+
+        /* Glass Morphism Effect */
+        .glass-effect {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+        }
+
+        /* Ensure all clickable elements have pointer cursor */
+        .nav-item,
+        button,
+        .btn,
+        .counter-btn,
+        .tab-btn,
+        .proposal-actions button,
+        .upgrade-card button {
+            cursor: pointer !important;
+        }
+        
+        /* Glow Effect */
+        .glow-effect {
+            box-shadow: 
+                0 0 20px rgba(220, 174, 29, 0.3),
+                0 0 40px rgba(220, 174, 29, 0.2),
+                0 0 60px rgba(220, 174, 29, 0.1);
+        }
+    </style>
+    <script>
+        // Define navigation object first
+        window.navigate = {
+            calculator: function() {
+                console.log('Navigating to Calculator...');
+                document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+                document.getElementById('calculator-page').style.display = 'block';
+                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                document.querySelector('[data-page="calculator"]').classList.add('active');
+            },
+            pool: function() {
+                console.log('Navigating to Pool...');
+                document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+                document.getElementById('pool-page').style.display = 'block';
+                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                document.querySelector('[data-page="pool"]').classList.add('active');
+                // Delay function call to ensure it's loaded
+                setTimeout(() => {
+                    if (window.updatePoolCost) updatePoolCost();
+                }, 100);
+            },
+            upgrades: function() {
+                console.log('Navigating to Upgrades...');
+                document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+                document.getElementById('upgrades-page').style.display = 'block';
+                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                document.querySelector('[data-page="upgrades"]').classList.add('active');
+                // Delay function call to ensure it's loaded
+                setTimeout(() => {
+                    if (window.updateCart) updateCart();
+                }, 100);
+            },
+            proposals: function() {
+                console.log('Navigating to Proposals...');
+                document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+                document.getElementById('proposals-page').style.display = 'block';
+                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                document.querySelector('[data-page="proposals"]').classList.add('active');
+                // Delay function call to ensure it's loaded
+                setTimeout(() => {
+                    if (window.renderProposals) renderProposals();
+                }, 100);
+            }
+        };
+    </script>
+</head>
+<body>
+    <!-- Loading Message -->
+    <div id="loading-message" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--gold); color: var(--black); padding: 1rem 2rem; border-radius: 10px; font-weight: 600; z-index: 10000;">
+        Carregando OptiCloud...
+    </div>
+
+    <!-- Background Effects -->
+    <div class="background-container">
+        <div class="background-gradient"></div>
+        <div class="grid-background"></div>
+        <div class="orb orb1"></div>
+        <div class="orb orb2"></div>
+        <div class="orb orb3"></div>
+    </div>
+
+    <!-- App Container -->
+    <div class="app-container">
+        <!-- Mobile Menu Toggle -->
+        <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+            ☰
+        </button>
+        
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h1 class="logo">OptiCloud</h1>
+                <p class="logo-subtitle">Cloud Premium</p>
+            </div>
+            
+            <nav class="nav-menu">
+                <div class="nav-item active" data-page="calculator" onclick="navigate.calculator()">
+                    <span class="nav-icon">💻</span>
+                    <span>Calculadora VM</span>
+                </div>
+                <div class="nav-item" data-page="pool" onclick="navigate.pool()">
+                    <span class="nav-icon">🔄</span>
+                    <span>Pool de Recursos</span>
+                </div>
+                <div class="nav-item" data-page="upgrades" onclick="navigate.upgrades()">
+                    <span class="nav-icon">⚡</span>
+                    <span>Upgrades</span>
+                </div>
+                <div class="nav-item" data-page="proposals" onclick="navigate.proposals()">
+                    <span class="nav-icon">📋</span>
+                    <span>Propostas</span>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Page: Calculator -->
+            <div id="calculator-page" class="page">
+                <!-- Page Header -->
+                <header class="page-header fade-in">
+                    <h1 class="page-title">Cloud Computing</h1>
+                    <p class="page-subtitle">Infraestrutura Enterprise de Alta Performance com Transparência Total de Custos</p>
+                </header>
+
+                <!-- Stats Bar -->
+                <div class="stats-bar fade-in">
+                    <div class="stat-card">
+                        <div class="stat-icon">🌟</div>
+                        <div class="stat-content">
+                            <div class="stat-value">99.99%</div>
+                            <div class="stat-label">Uptime</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🛡️</div>
+                        <div class="stat-content">
+                            <div class="stat-value">ISO 27001</div>
+                            <div class="stat-label">Certificado</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🏆</div>
+                        <div class="stat-content">
+                            <div class="stat-value">Tier III</div>
+                            <div class="stat-label">Datacenter</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⚡</div>
+                        <div class="stat-content">
+                            <div class="stat-value">Deploy 5min</div>
+                            <div class="stat-label">Provisionamento</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VM List and Configuration -->
+                <div class="vm-list-container fade-in">
+                    <!-- VM List -->
+                    <div class="vm-list">
+                        <div class="vm-list-header">
+                            <h3 class="vm-list-title">Seus Servidores</h3>
+                            <button class="add-vm-btn" onclick="addNewVM()">+ Adicionar VM</button>
+                        </div>
+                        <div id="vm-list-content">
+                            <!-- VMs will be dynamically added here -->
+                        </div>
+                    </div>
+
+                    <!-- Configuration Panel -->
+                    <div class="config-panel">
+                        <h2 style="margin-bottom: 2rem; font-size: 1.5rem;">Configuração da VM</h2>
+                        
+                        <!-- Compute Resources -->
+                        <div class="config-section">
+                            <div class="section-header">
+                                <div class="section-icon">💻</div>
+                                <h3 class="section-title">Recursos Computacionais</h3>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label class="input-label">vCPU (Processamento)</label>
+                                <div class="slider-wrapper">
+                                    <input type="range" class="modern-slider" id="vcpu" min="1" max="128" value="2">
+                                    <div class="slider-value"><span id="vcpu-value">2</span> cores</div>
+                                </div>
+                            </div>
+
+                            <div class="input-group">
+                                <label class="input-label">RAM (Memória)</label>
+                                <div class="slider-wrapper">
+                                    <input type="range" class="modern-slider" id="ram" min="1" max="1024" value="4">
+                                    <div class="slider-value"><span id="ram-value">4</span> GB</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Storage -->
+                        <div class="config-section">
+                            <div class="section-header">
+                                <div class="section-icon">💾</div>
+                                <h3 class="section-title">Armazenamento</h3>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label class="input-label">Storage SSD (Alta Performance)</label>
+                                <div class="slider-wrapper">
+                                    <input type="range" class="modern-slider" id="ssd" min="0" max="10000" value="50" step="10">
+                                    <div class="slider-value"><span id="ssd-value">50</span> GB</div>
+                                </div>
+                            </div>
+
+                            <div class="input-group">
+                                <label class="input-label">Storage FCM (Alta Capacidade)</label>
+                                <div class="slider-wrapper">
+                                    <input type="range" class="modern-slider" id="fcm" min="0" max="10000" value="0" step="10">
+                                    <div class="slider-value"><span id="fcm-value">0</span> GB</div>
+                                </div>
+                            </div>
+
+                            <div class="input-group">
+                                <label class="input-label">Tipo de Backup</label>
+                                <select class="modern-input" id="backup">
+                                    <option value="padrao">Backup Padrão (+30%)</option>
+                                    <option value="duplo">Backup Duplo (+55%)</option>
+                                    <option value="triplo">Backup Triplo (+75%)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Operating System -->
+                        <div class="config-section">
+                            <div class="section-header">
+                                <div class="section-icon">🖥️</div>
+                                <h3 class="section-title">Sistema Operacional</h3>
+                            </div>
+                            
+                            <div class="input-group">
+                                <select class="modern-input" id="os">
+                                    <option value="none">Sem Sistema Operacional</option>
+                                    <optgroup label="Windows Server">
+                                        <option value="windows-2022">Windows Server 2022 (+R$ 55/2vCPU)</option>
+                                        <option value="windows-2019">Windows Server 2019 (+R$ 55/2vCPU)</option>
+                                        <option value="windows-2016">Windows Server 2016 (+R$ 55/2vCPU)</option>
+                                    </optgroup>
+                                    <optgroup label="Linux Enterprise">
+                                        <option value="rhel">Red Hat Enterprise Linux (+R$ 1.200/servidor)</option>
+                                        <option value="suse">SUSE Linux Enterprise (+R$ 900/servidor)</option>
+                                    </optgroup>
+                                    <optgroup label="Linux Gratuito">
+                                        <option value="ubuntu">Ubuntu Server (Gratuito)</option>
+                                        <option value="centos">CentOS (Gratuito)</option>
+                                        <option value="debian">Debian (Gratuito)</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Database -->
+                        <div class="config-section">
+                            <div class="section-header">
+                                <div class="section-icon">🗄️</div>
+                                <h3 class="section-title">Banco de Dados</h3>
+                            </div>
+                            
+                            <div class="input-group">
+                                <select class="modern-input" id="database">
+                                    <option value="none">Sem Banco de Dados</option>
+                                    <optgroup label="SQL Server">
+                                        <option value="sqlserver-express">SQL Server Express (Gratuito)</option>
+                                        <option value="sqlserver-web">SQL Server Web (+R$ 180/2vCPU)</option>
+                                        <option value="sqlserver-standard">SQL Server Standard (+R$ 800/2vCPU)</option>
+                                        <option value="sqlserver-enterprise">SQL Server Enterprise (+R$ 2.340/2vCPU)</option>
+                                    </optgroup>
+                                    <optgroup label="Oracle">
+                                        <option value="oracle-se2">Oracle SE2 (+R$ 1.560/2vCPU)</option>
+                                        <option value="oracle-ee">Oracle EE (+R$ 7.800/2vCPU)</option>
+                                        <option value="oracle-rac">Oracle RAC (+R$ 15.600/2vCPU)</option>
+                                    </optgroup>
+                                    <optgroup label="Open Source">
+                                        <option value="postgresql">PostgreSQL (Gratuito)</option>
+                                        <option value="mysql">MySQL (Gratuito)</option>
+                                        <option value="mongodb">MongoDB (Gratuito)</option>
+                                        <option value="mariadb">MariaDB (Gratuito)</option>
+                                    </optgroup>
+                                    <optgroup label="Enterprise NoSQL">
+                                        <option value="redis">Redis Enterprise (+R$ 890)</option>
+                                        <option value="datastax">DataStax Enterprise (+R$ 1.500)</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Additional Licenses -->
+                        <div class="config-section">
+                            <div class="section-header">
+                                <div class="section-icon">🔐</div>
+                                <h3 class="section-title">Licenças Adicionais</h3>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label class="input-label" style="display: flex; align-items: center; gap: 1rem;">
+                                    <span>Antivírus (+R$ 55/mês)</span>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="antivirus">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </label>
+                            </div>
+
+                            <div class="input-group">
+                                <label class="input-label" style="display: flex; align-items: center; gap: 1rem;">
+                                    <span>TSPlus</span>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="tsplus-enabled">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </label>
+                                <div id="tsplus-options" style="display: none; margin-top: 1rem;">
+                                    <select class="modern-input" id="tsplus-users">
+                                        <option value="3">3 usuários (+R$ 140)</option>
+                                        <option value="5">5 usuários (+R$ 180)</option>
+                                        <option value="10">10 usuários (+R$ 310)</option>
+                                        <option value="15">15 usuários (+R$ 390)</option>
+                                        <option value="25">25 usuários (+R$ 550)</option>
+                                        <option value="35">35 usuários (+R$ 730)</option>
+                                        <option value="49">49 usuários (+R$ 990)</option>
+                                        <option value="ilimitado">Usuários ilimitados (+R$ 1.190)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="input-group">
+                                <label class="input-label" style="display: flex; align-items: center; gap: 1rem;">
+                                    <span>ThinPrint (+R$ 850/mês)</span>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="thinprint">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </label>
+                            </div>
+
+                            <div class="input-group">
+                                <label class="input-label">IPs Adicionais (+R$ 70/IP)</label>
+                                <div class="slider-wrapper">
+                                    <input type="range" class="modern-slider" id="ips" min="0" max="10" value="0">
+                                    <div class="slider-value"><span id="ips-value">0</span> IPs</div>
+                                </div>
+                            </div>
+
+                            <div class="input-group">
+                                <label class="input-label">Web Application Firewall (WAF)</label>
+                                <select class="modern-input" id="waf">
+                                    <option value="none">Sem WAF</option>
+                                    <option value="pro">WAF Pro (+R$ 200)</option>
+                                    <option value="business">WAF Business (+R$ 1.600)</option>
+                                    <option value="enterprise">WAF Enterprise (+R$ 15.600)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Discount -->
+                        <div class="config-section">
+                            <div class="section-header">
+                                <div class="section-icon">🏷️</div>
+                                <h3 class="section-title">Desconto Exclusivo para esta VM</h3>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label class="input-label">Percentual de Desconto (apenas infraestrutura)</label>
+                                <div class="slider-wrapper">
+                                    <input type="range" class="modern-slider" id="discount" min="0" max="50" value="0">
+                                    <div class="slider-value"><span id="discount-value">0</span>%</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Cost Summary -->
+                        <div class="cost-summary">
+                            <div class="cost-breakdown">
+                                <div class="cost-item">
+                                    <span class="cost-label">vCPU</span>
+                                    <span class="cost-value" id="cost-vcpu">R$ 0,00</span>
+                                </div>
+                                <div class="cost-item">
+                                    <span class="cost-label">RAM</span>
+                                    <span class="cost-value" id="cost-ram">R$ 0,00</span>
+                                </div>
+                                <div class="cost-item">
+                                    <span class="cost-label">Armazenamento + Backup</span>
+                                    <span class="cost-value" id="cost-storage">R$ 0,00</span>
+                                </div>
+                                <div class="cost-item">
+                                    <span class="cost-label">Sistema Operacional</span>
+                                    <span class="cost-value" id="cost-os">R$ 0,00</span>
+                                </div>
+                                <div class="cost-item">
+                                    <span class="cost-label">Banco de Dados</span>
+                                    <span class="cost-value" id="cost-db">R$ 0,00</span>
+                                </div>
+                                <div class="cost-item">
+                                    <span class="cost-label">Licenças Adicionais</span>
+                                    <span class="cost-value" id="cost-licenses">R$ 0,00</span>
+                                </div>
+                                <div class="cost-item">
+                                    <span class="cost-label">Monitoramento</span>
+                                    <span class="cost-value">R$ 100,00</span>
+                                </div>
+                                <div class="cost-item" id="discount-row" style="display: none;">
+                                    <span class="cost-label">Desconto</span>
+                                    <span class="cost-value" id="cost-discount" style="color: var(--success);">- R$ 0,00</span>
+                                </div>
+                            </div>
+                            <div class="total-cost">
+                                <div class="total-label">Total Mensal</div>
+                                <div class="total-value" id="total-cost">R$ 0,00</div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="action-buttons">
+                            <button class="btn btn-primary" onclick="saveVM()">Salvar Configuração</button>
+                            <button class="btn btn-secondary" onclick="exportPDF()">Gerar PDF da Proposta</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Market Intelligence -->
+                <div class="market-section fade-in">
+                    <h2 style="margin-bottom: 1.5rem; font-size: 1.5rem; text-align: center;">
+                        📊 Market Intelligence - Comparação com Principais Clouds
+                    </h2>
+                    <div class="provider-grid" id="provider-comparison">
+                        <!-- Provider comparisons will be added here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page: Pool de Recursos -->
+            <div id="pool-page" class="page" style="display: none;">
+                <header class="page-header fade-in">
+                    <h1 class="page-title">Pool de Recursos</h1>
+                    <p class="page-subtitle">Configure recursos compartilhados para múltiplas VMs com economia em escala</p>
+                </header>
+
+                <div class="pool-container fade-in">
+                    <!-- Resources Configuration -->
+                    <div class="config-panel">
+                        <h2 style="margin-bottom: 2rem; font-size: 1.5rem;">⚡ Recursos Computacionais Totais</h2>
+                        
+                        <div class="config-section">
+                            <div class="section-header">
+                                <div class="section-icon">💻</div>
+                                <h3 class="section-title">Total de vCPUs</h3>
+                            </div>
+                            <div class="input-group">
+                                <div class="slider-wrapper">
+                                    <input type="range" class="modern-slider" id="pool-vcpu" min="10" max="10000" value="100" step="10">
+                                    <div class="slider-value"><span id="pool-vcpu-value">100</span> cores</div>
+                                </div>
+                                <p style="color: rgba(255,255,255,0.6); font-size: 0.9rem; margin-top: 0.5rem;">
+                                    Limite: 10.000 cores | R$ 2.498,40/mês por 100 cores
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="config-section">
+                            <div class="section-header">
+                                <div class="section-icon">🧠</div>
+                                <h3 class="section-title">Total de RAM</h3>
+                            </div>
+                            <div class="input-group">
+                                <div class="slider-wrapper">
+                                    <input type="range" class="modern-slider" id="pool-ram" min="10" max="100000" value="200" step="10">
+                                    <div class="slider-value"><span id="pool-ram-value">200</span> GB</div>
+                                </div>
+                                <p style="color: rgba(255,255,255,0.6); font-size: 0.9rem; margin-top: 0.5rem;">
+                                    Limite: 100 TB | R$ 4.003,20/mês por 200 GB
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="config-section">
+                            <div class="section-header">
+                                <div class="section-icon">💾</div>
+                                <h3 class="section-title">Armazenamento Total</h3>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label class="input-label">Storage SSD (Alta Performance)</label>
+                                <div class="slider-wrapper">
+                                    <input type="range" class="modern-slider" id="pool-ssd" min="0" max="300000" value="0" step="100">
+                                    <div class="slider-value"><span id="pool-ssd-value">0</span> GB</div>
+                                </div>
+                                <p style="color: rgba(255,255,255,0.6); font-size: 0.9rem; margin-top: 0.5rem;">
+                                    R$ 0,55/GB - Limite: 300 TB
+                                </p>
+                            </div>
+
+                            <div class="input-group">
+                                <label class="input-label">Storage FCM (Capacidade)</label>
+                                <div class="slider-wrapper">
+                                    <input type="range" class="modern-slider" id="pool-fcm" min="0" max="300000" value="5000" step="100">
+                                    <div class="slider-value"><span id="pool-fcm-value">5000</span> GB</div>
+                                </div>
+                                <p style="color: rgba(255,255,255,0.6); font-size: 0.9rem; margin-top: 0.5rem;">
+                                    R$ 0,75/GB - Limite: 300 TB
+                                </p>
+                            </div>
+
+                            <div class="input-group">
+                                <label class="input-label">Tipo de Backup para Todo o Pool</label>
+                                <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                                    <label class="radio-card">
+                                        <input type="radio" name="pool-backup" value="padrao" checked>
+                                        <div class="radio-content">
+                                            <span>Padrão</span>
+                                            <small>+30% storage</small>
+                                        </div>
+                                    </label>
+                                    <label class="radio-card">
+                                        <input type="radio" name="pool-backup" value="duplo">
+                                        <div class="radio-content">
+                                            <span>Duplo</span>
+                                            <small>+55% storage</small>
+                                        </div>
+                                    </label>
+                                    <label class="radio-card">
+                                        <input type="radio" name="pool-backup" value="triplo">
+                                        <div class="radio-content">
+                                            <span>Triplo</span>
+                                            <small>+75% storage</small>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="config-section">
+                            <div class="section-header">
+                                <div class="section-icon">🖥️</div>
+                                <h3 class="section-title">Quantidade de VMs</h3>
+                            </div>
+                            <div class="input-group">
+                                <div class="slider-wrapper">
+                                    <input type="range" class="modern-slider" id="pool-vms" min="5" max="500" value="50" step="5">
+                                    <div class="slider-value"><span id="pool-vms-value">50</span> VMs</div>
+                                </div>
+                                <p style="color: rgba(255,255,255,0.6); font-size: 0.9rem; margin-top: 0.5rem;">
+                                    R$ 100,00 por VM monitorada | R$ 5.000,00/mês
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Pool Licenses -->
+                        <div class="config-section">
+                            <div class="section-header">
+                                <div class="section-icon">📜</div>
+                                <h3 class="section-title">Sistemas Operacionais</h3>
+                            </div>
+                            
+                            <div class="license-grid">
+                                <div class="license-item">
+                                    <div class="license-header">
+                                        <span>Windows Server</span>
+                                        <span class="license-price">R$ 55 por licença</span>
+                                    </div>
+                                    <div class="license-counter">
+                                        <button class="counter-btn" onclick="updatePoolLicense('windows', -1)">-</button>
+                                        <span id="pool-windows-count">0</span>
+                                        <button class="counter-btn" onclick="updatePoolLicense('windows', 1)">+</button>
+                                    </div>
+                                </div>
+
+                                <div class="license-item">
+                                    <div class="license-header">
+                                        <span>Red Hat Enterprise Linux</span>
+                                        <span class="license-price">R$ 1.200 por servidor</span>
+                                    </div>
+                                    <div class="license-counter">
+                                        <button class="counter-btn" onclick="updatePoolLicense('rhel', -1)">-</button>
+                                        <span id="pool-rhel-count">0</span>
+                                        <button class="counter-btn" onclick="updatePoolLicense('rhel', 1)">+</button>
+                                    </div>
+                                </div>
+
+                                <div class="license-item">
+                                    <div class="license-header">
+                                        <span>SUSE Linux Enterprise</span>
+                                        <span class="license-price">R$ 900 por servidor</span>
+                                    </div>
+                                    <div class="license-counter">
+                                        <button class="counter-btn" onclick="updatePoolLicense('suse', -1)">-</button>
+                                        <span id="pool-suse-count">0</span>
+                                        <button class="counter-btn" onclick="updatePoolLicense('suse', 1)">+</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="config-section">
+                            <div class="section-header">
+                                <div class="section-icon">🔒</div>
+                                <h3 class="section-title">Licenças e Segurança</h3>
+                            </div>
+                            
+                            <div class="license-grid">
+                                <div class="license-item">
+                                    <div class="license-header">
+                                        <span>Antivírus</span>
+                                        <span class="license-price">R$ 55 por VM</span>
+                                    </div>
+                                    <div class="license-counter">
+                                        <button class="counter-btn" onclick="updatePoolLicense('antivirus', -1)">-</button>
+                                        <span id="pool-antivirus-count">0</span>
+                                        <button class="counter-btn" onclick="updatePoolLicense('antivirus', 1)">+</button>
+                                    </div>
+                                </div>
+
+                                <div class="license-item">
+                                    <div class="license-header">
+                                        <span>SQL Server Standard</span>
+                                        <span class="license-price">R$ 800 por licença</span>
+                                    </div>
+                                    <div class="license-counter">
+                                        <button class="counter-btn" onclick="updatePoolLicense('sqlserver', -1)">-</button>
+                                        <span id="pool-sqlserver-count">0</span>
+                                        <button class="counter-btn" onclick="updatePoolLicense('sqlserver', 1)">+</button>
+                                    </div>
+                                </div>
+
+                                <div class="license-item">
+                                    <div class="license-header">
+                                        <span>IPs Adicionais</span>
+                                        <span class="license-price">R$ 70 por IP</span>
+                                    </div>
+                                    <div class="license-counter">
+                                        <button class="counter-btn" onclick="updatePoolLicense('ips', -1)">-</button>
+                                        <span id="pool-ips-count">0</span>
+                                        <button class="counter-btn" onclick="updatePoolLicense('ips', 1)">+</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pool Summary -->
+                        <div class="pool-summary glass-effect">
+                            <h3 style="margin-bottom: 1.5rem; color: var(--gold);">📊 Resumo do Pool de Recursos</h3>
+                            
+                            <div class="summary-grid">
+                                <div class="summary-item">
+                                    <span class="summary-label">Recursos Totais</span>
+                                    <div class="summary-details">
+                                        <p>vCPUs: <strong id="summary-vcpus">100 cores</strong></p>
+                                        <p>RAM: <strong id="summary-ram">200 GB</strong></p>
+                                        <p>Storage Total: <strong id="summary-storage">5000 GB</strong></p>
+                                        <p>VMs Monitoradas: <strong id="summary-vms">50</strong></p>
+                                    </div>
+                                </div>
+                                
+                                <div class="summary-item">
+                                    <span class="summary-label">Custos Detalhados</span>
+                                    <div class="summary-costs">
+                                        <p>Infraestrutura: <strong id="pool-infra-cost">R$ 0,00</strong></p>
+                                        <p>Licenciamento: <strong id="pool-license-cost">R$ 0,00</strong></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="total-cost" style="margin-top: 2rem;">
+                                <div class="total-label">Total Mensal do Pool</div>
+                                <div class="total-value" id="pool-total-cost">R$ 0,00</div>
+                            </div>
+
+                            <div class="action-buttons">
+                                <button class="btn btn-primary" onclick="savePoolConfig()">
+                                    Gerar PDF do Pool
+                                </button>
+                                <button class="btn btn-secondary" onclick="createPoolProposal()">
+                                    Gerar Proposta do Pool
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page: Upgrades -->
+            <div id="upgrades-page" class="page" style="display: none;">
+                <header class="page-header fade-in">
+                    <h1 class="page-title">Catálogo de Upgrades</h1>
+                    <p class="page-subtitle">Adicione recursos individuais e veja o preço em tempo real</p>
+                </header>
+
+                <!-- Upgrades Catalog -->
+                <div class="upgrades-container fade-in">
+                    <div class="upgrades-grid">
+                        <!-- Computational Resources -->
+                        <div class="upgrade-category">
+                            <h3 class="category-title">
+                                <span class="section-icon">💻</span>
+                                Recursos Computacionais
+                            </h3>
+                            
+                            <div class="upgrade-items">
+                                <div class="upgrade-card" data-item="vcpu" data-price="24.96">
+                                    <div class="upgrade-icon">⚡</div>
+                                    <h4>vCPU Adicional</h4>
+                                    <p class="upgrade-desc">Poder de processamento extra para suas aplicações</p>
+                                    <div class="upgrade-price">R$ 24,96<span>/mês por unidade</span></div>
+                                    <p class="upgrade-limit">Limite: 500 unidades</p>
+                                    <button class="btn btn-primary" onclick="addToCart('vcpu', 24.96, 'vCPU Adicional')">
+                                        Adicionar
+                                    </button>
+                                </div>
+
+                                <div class="upgrade-card" data-item="ram" data-price="20.02">
+                                    <div class="upgrade-icon">🧠</div>
+                                    <h4>RAM Adicional</h4>
+                                    <p class="upgrade-desc">Memória para melhor performance e multitasking</p>
+                                    <div class="upgrade-price">R$ 20,02<span>/mês por GB</span></div>
+                                    <p class="upgrade-limit">Limite: 1000 unidades</p>
+                                    <button class="btn btn-primary" onclick="addToCart('ram', 20.02, 'GB RAM Adicional')">
+                                        Adicionar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Storage -->
+                        <div class="upgrade-category">
+                            <h3 class="category-title">
+                                <span class="section-icon">💾</span>
+                                Armazenamento
+                            </h3>
+                            
+                            <div class="upgrade-items">
+                                <div class="upgrade-card" data-item="ssd" data-price="0.55">
+                                    <div class="upgrade-icon">💿</div>
+                                    <h4>Storage SSD</h4>
+                                    <p class="upgrade-desc">Armazenamento rápido e confiável para dados críticos</p>
+                                    <div class="upgrade-price">R$ 0,55<span>/GB/mês</span></div>
+                                    <p class="upgrade-limit">Limite: 50000 unidades</p>
+                                    <button class="btn btn-primary" onclick="addToCart('ssd', 0.55, 'GB Storage SSD')">
+                                        Adicionar
+                                    </button>
+                                </div>
+
+                                <div class="upgrade-card" data-item="fcm" data-price="0.75">
+                                    <div class="upgrade-icon">🗄️</div>
+                                    <h4>Storage FCM</h4>
+                                    <p class="upgrade-desc">Armazenamento econômico para dados frios</p>
+                                    <div class="upgrade-price">R$ 0,75<span>/GB/mês</span></div>
+                                    <p class="upgrade-limit">Limite: 50000 unidades</p>
+                                    <button class="btn btn-primary" onclick="addToCart('fcm', 0.75, 'GB Storage FCM')">
+                                        Adicionar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Network & Security -->
+                        <div class="upgrade-category">
+                            <h3 class="category-title">
+                                <span class="section-icon">🌐</span>
+                                Rede e Segurança
+                            </h3>
+                            
+                            <div class="upgrade-items">
+                                <div class="upgrade-card" data-item="ip" data-price="70">
+                                    <div class="upgrade-icon">🔗</div>
+                                    <h4>IP Adicional</h4>
+                                    <p class="upgrade-desc">Endereço IP público dedicado</p>
+                                    <div class="upgrade-price">R$ 70,00<span>/mês</span></div>
+                                    <p class="upgrade-limit">Limite: 50 unidades</p>
+                                    <button class="btn btn-primary" onclick="addToCart('ip', 70, 'IP Adicional')">
+                                        Adicionar
+                                    </button>
+                                </div>
+
+                                <div class="upgrade-card" data-item="waf-pro" data-price="200">
+                                    <div class="upgrade-icon">🛡️</div>
+                                    <h4>WAF Pro</h4>
+                                    <p class="upgrade-desc">Proteção avançada para aplicações web</p>
+                                    <div class="upgrade-price">R$ 200,00<span>/mês</span></div>
+                                    <button class="btn btn-primary" onclick="addToCart('waf-pro', 200, 'WAF Pro')">
+                                        Adicionar
+                                    </button>
+                                </div>
+
+                                <div class="upgrade-card" data-item="waf-business" data-price="1600">
+                                    <div class="upgrade-icon">🔒</div>
+                                    <h4>WAF Business</h4>
+                                    <p class="upgrade-desc">Proteção empresarial completa</p>
+                                    <div class="upgrade-price">R$ 1.600,00<span>/mês</span></div>
+                                    <button class="btn btn-primary" onclick="addToCart('waf-business', 1600, 'WAF Business')">
+                                        Adicionar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Software Licenses -->
+                        <div class="upgrade-category">
+                            <h3 class="category-title">
+                                <span class="section-icon">📜</span>
+                                Licenças de Software
+                            </h3>
+                            
+                            <div class="upgrade-items">
+                                <div class="upgrade-card" data-item="windows" data-price="220">
+                                    <div class="upgrade-icon">🪟</div>
+                                    <h4>Windows Server</h4>
+                                    <p class="upgrade-desc">Licença completa do Windows Server</p>
+                                    <div class="upgrade-price">R$ 220,00<span>/mês</span></div>
+                                    <button class="btn btn-primary" onclick="addToCart('windows', 220, 'Windows Server License')">
+                                        Adicionar
+                                    </button>
+                                </div>
+
+                                <div class="upgrade-card" data-item="sqlserver" data-price="800">
+                                    <div class="upgrade-icon">🗃️</div>
+                                    <h4>SQL Server Standard</h4>
+                                    <p class="upgrade-desc">Banco de dados Microsoft SQL Server</p>
+                                    <div class="upgrade-price">R$ 800,00<span>/mês</span></div>
+                                    <button class="btn btn-primary" onclick="addToCart('sqlserver', 800, 'SQL Server Standard')">
+                                        Adicionar
+                                    </button>
+                                </div>
+
+                                <div class="upgrade-card" data-item="tsplus" data-price="1190">
+                                    <div class="upgrade-icon">🖥️</div>
+                                    <h4>TSPlus Ilimitado</h4>
+                                    <p class="upgrade-desc">Acesso remoto para usuários ilimitados</p>
+                                    <div class="upgrade-price">R$ 1.190,00<span>/mês</span></div>
+                                    <button class="btn btn-primary" onclick="addToCart('tsplus', 1190, 'TSPlus Unlimited')">
+                                        Adicionar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Shopping Cart -->
+                    <div class="shopping-cart glass-effect">
+                        <h3 style="margin-bottom: 1.5rem; color: var(--gold);">
+                            🛒 Carrinho de Upgrades
+                        </h3>
+                        
+                        <div id="cart-items" class="cart-items">
+                            <p style="text-align: center; color: rgba(255,255,255,0.5);">
+                                Seu carrinho está vazio
+                            </p>
+                        </div>
+
+                        <div class="cart-summary" style="display: none;">
+                            <div class="total-cost">
+                                <div class="total-label">Total Mensal</div>
+                                <div class="total-value" id="cart-total">R$ 0,00</div>
+                            </div>
+
+                            <div class="action-buttons">
+                                <button class="btn btn-primary" onclick="generateUpgradesPDF()">
+                                    Gerar PDF
+                                </button>
+                                <button class="btn btn-secondary" onclick="copyCartSummary()">
+                                    Copiar Resumo
+                                </button>
+                                <button class="btn btn-secondary" onclick="clearCart()">
+                                    Limpar Carrinho
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page: Proposals -->
+            <div id="proposals-page" class="page" style="display: none;">
+                <header class="page-header fade-in">
+                    <h1 class="page-title">Propostas</h1>
+                    <p class="page-subtitle">Gerencie todas as suas propostas comerciais em um só lugar</p>
+                </header>
+
+                <!-- Proposals Management -->
+                <div class="proposals-container fade-in">
+                    <div class="proposals-header">
+                        <div class="proposals-tabs">
+                            <button class="tab-btn active" onclick="switchProposalTab('active')">
+                                Ativas (<span id="active-count">0</span>)
+                            </button>
+                            <button class="tab-btn" onclick="switchProposalTab('archived')">
+                                Arquivadas (<span id="archived-count">0</span>)
+                            </button>
+                        </div>
+                        <button class="btn btn-primary" onclick="createNewProposal()">
+                            + Nova Proposta
+                        </button>
+                    </div>
+
+                    <!-- Active Proposals -->
+                    <div id="active-proposals" class="proposals-grid">
+                        <!-- Proposals will be dynamically added here -->
+                    </div>
+
+                    <!-- Archived Proposals -->
+                    <div id="archived-proposals" class="proposals-grid" style="display: none;">
+                        <!-- Archived proposals will be dynamically added here -->
+                    </div>
+                </div>
+
+                <!-- New Proposal Modal -->
+                <div id="proposal-modal" class="modal" style="display: none;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h2>Nova Proposta</h2>
+                            <button class="modal-close" onclick="closeProposalModal()">×</button>
+                        </div>
+                        
+                        <div class="modal-body">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="input-label">Nome do Cliente</label>
+                                    <input type="text" class="modern-input" id="client-name" placeholder="Ex: Empresa ABC Ltda">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="input-label">Contato Comercial</label>
+                                    <input type="text" class="modern-input" id="commercial-contact" placeholder="Nome do responsável">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="input-label">Email</label>
+                                    <input type="email" class="modern-input" id="client-email" placeholder="contato@empresa.com">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="input-label">Telefone</label>
+                                    <input type="tel" class="modern-input" id="client-phone" placeholder="(11) 9999-9999">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="input-label">Contato Técnico</label>
+                                    <input type="text" class="modern-input" id="technical-contact" placeholder="Nome do técnico">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="input-label">Validade da Proposta</label>
+                                    <select class="modern-input" id="proposal-validity">
+                                        <option value="15">15 dias</option>
+                                        <option value="30" selected>30 dias</option>
+                                        <option value="60">60 dias</option>
+                                        <option value="90">90 dias</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group" style="margin-top: 1.5rem;">
+                                <label class="input-label">Observações</label>
+                                <textarea class="modern-input" id="proposal-notes" rows="4" placeholder="Informações adicionais sobre a proposta..."></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" onclick="closeProposalModal()">Cancelar</button>
+                            <button class="btn btn-primary" onclick="saveProposal()">Criar Proposta</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Other pages would go here -->
+        </main>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loading">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <script>
+        // State Management
+        let state = {
+            vms: [],
+            selectedVMId: null,
+            currentPage: 'calculator'
+        };
+
+        // Pricing Configuration
+        const pricing = {
+            vcpuHour: 0.0347,
+            ramHour: 0.0278,
+            hoursMonth: 720,
+            ssdGB: 0.55,
+            fcmGB: 0.75,
+            backupPadrao: 0.30,
+            backupDuplo: 0.25,
+            backupTriplo: 0.20,
+            monitoring: 100,
+            antivirus: 55,
+            tsplus: {
+                3: 140, 5: 180, 10: 310, 15: 390,
+                25: 550, 35: 730, 49: 990, ilimitado: 1190
+            },
+            thinprint: 850,
+            ipAdicional: 70,
+            waf: {
+                none: 0, pro: 200, business: 1600, enterprise: 15600
+            }
+        };
+
+        // Initialize
+        window.addEventListener('load', function() {
+            console.log('=== OptiCloud Starting ===');
+            
+            try {
+                initializeSliders();
+                initializeToggles();
+                initializePoolSliders();
+                loadState();
+                updateCostCalculation();
+                
+                // Add initial VM if none exist
+                if (state.vms.length === 0) {
+                    addNewVM();
+                }
+                
+                // Show initial page
+                const currentPage = state.currentPage || 'calculator';
+                showPage(currentPage);
+                
+                // Update nav active state
+                document.querySelectorAll('.nav-item').forEach(nav => {
+                    nav.classList.remove('active');
+                    if (nav.dataset.page === currentPage) {
+                        nav.classList.add('active');
+                    }
+                });
+                
+                console.log('=== OptiCloud Ready! ===');
+                
+                // Remove loading message
+                setTimeout(() => {
+                    const loadingMsg = document.getElementById('loading-message');
+                    if (loadingMsg) {
+                        loadingMsg.style.display = 'none';
+                    }
+                }, 500);
+                
+            } catch (error) {
+                console.error('Critical error during initialization:', error);
+                
+                // Remove loading message on error
+                const loadingMsg = document.getElementById('loading-message');
+                if (loadingMsg) {
+                    loadingMsg.style.display = 'none';
+                }
+                
+                // Show calculator page as fallback
+                const calculatorPage = document.getElementById('calculator-page');
+                if (calculatorPage) {
+                    calculatorPage.style.display = 'block';
+                }
+            }
+        });
+
+        // Show specific page
+        function showPage(pageName) {
+            console.log('=== Showing page:', pageName);
+            
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(p => {
+                p.style.display = 'none';
+            });
+            
+            // Show selected page
+            const targetPage = document.getElementById(`${pageName}-page`);
+            if (targetPage) {
+                targetPage.style.display = 'block';
+                console.log('✓ Page shown successfully:', pageName);
+            }
+        }
+
+        // Initialize Sliders
+        function initializeSliders() {
+            const sliders = document.querySelectorAll('.modern-slider');
+            sliders.forEach(slider => {
+                slider.addEventListener('input', function() {
+                    const valueSpan = document.getElementById(this.id + '-value');
+                    if (valueSpan) {
+                        valueSpan.textContent = this.value;
+                    }
+                    updateCostCalculation();
+                });
+                
+                // Set initial fill
+                updateSliderFill(slider);
+            });
+        }
+
+        // Update slider visual fill
+        function updateSliderFill(slider) {
+            const percentage = (slider.value - slider.min) / (slider.max - slider.min) * 100;
+            slider.style.background = `linear-gradient(to right, var(--gold) 0%, var(--gold) ${percentage}%, rgba(255, 255, 255, 0.1) ${percentage}%, rgba(255, 255, 255, 0.1) 100%)`;
+        }
+
+        // Initialize Toggles
+        function initializeToggles() {
+            // TSPlus toggle
+            const tsplusToggle = document.getElementById('tsplus-enabled');
+            const tsplusOptions = document.getElementById('tsplus-options');
+            
+            tsplusToggle.addEventListener('change', function() {
+                tsplusOptions.style.display = this.checked ? 'block' : 'none';
+                updateCostCalculation();
+            });
+
+            // All toggles update calculation
+            document.querySelectorAll('input[type="checkbox"]').forEach(toggle => {
+                toggle.addEventListener('change', updateCostCalculation);
+            });
+
+            // All selects update calculation
+            document.querySelectorAll('select').forEach(select => {
+                select.addEventListener('change', updateCostCalculation);
+            });
+        }
+
+        // Generate unique ID
+        function generateId() {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        }
+
+        // Add new VM
+        function addNewVM() {
+            const vm = {
+                id: generateId(),
+                name: `VM-${Date.now().toString().slice(-8)}`,
+                vcpu: 2,
+                ram: 4,
+                ssd: 50,
+                fcm: 0,
+                backup: 'padrao',
+                os: 'none',
+                database: 'none',
+                antivirus: false,
+                tsplus: {
+                    enabled: false,
+                    users: '3'
+                },
+                thinprint: false,
+                ips: 0,
+                waf: 'none',
+                discount: 0,
+                cost: 0
+            };
+
+            state.vms.push(vm);
+            state.selectedVMId = vm.id;
+            
+            renderVMList();
+            loadVMData(vm);
+            updateCostCalculation();
+            saveState();
+        }
+
+        // Render VM List
+        function renderVMList() {
+            const container = document.getElementById('vm-list-content');
+            container.innerHTML = '';
+
+            state.vms.forEach(vm => {
+                const card = document.createElement('div');
+                card.className = `vm-card ${vm.id === state.selectedVMId ? 'active' : ''}`;
+                card.onclick = () => selectVM(vm.id);
+                
+                card.innerHTML = `
+                    <div class="vm-card-header">
+                        <div>
+                            <div class="vm-name">${vm.name}</div>
+                            <div class="vm-id">ID: ${vm.id}</div>
+                        </div>
+                        <button onclick="deleteVM('${vm.id}', event)" style="background: none; border: none; color: var(--danger); cursor: pointer;">🗑️</button>
+                    </div>
+                    <div class="vm-specs">
+                        <span>${vm.vcpu} vCPU</span>
+                        <span>${vm.ram} GB RAM</span>
+                        <span>${vm.ssd + vm.fcm} GB Storage</span>
+                    </div>
+                    <div class="vm-cost">R$ ${vm.cost.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</div>
+                `;
+                
+                container.appendChild(card);
+            });
+
+            updateTotalCost();
+        }
+
+        // Select VM
+        function selectVM(id) {
+            state.selectedVMId = id;
+            const vm = state.vms.find(v => v.id === id);
+            if (vm) {
+                loadVMData(vm);
+                renderVMList();
+            }
+        }
+
+        // Load VM data into form
+        function loadVMData(vm) {
+            // Set sliders
+            document.getElementById('vcpu').value = vm.vcpu;
+            document.getElementById('vcpu-value').textContent = vm.vcpu;
+            
+            document.getElementById('ram').value = vm.ram;
+            document.getElementById('ram-value').textContent = vm.ram;
+            
+            document.getElementById('ssd').value = vm.ssd;
+            document.getElementById('ssd-value').textContent = vm.ssd;
+            
+            document.getElementById('fcm').value = vm.fcm;
+            document.getElementById('fcm-value').textContent = vm.fcm;
+            
+            document.getElementById('ips').value = vm.ips;
+            document.getElementById('ips-value').textContent = vm.ips;
+            
+            document.getElementById('discount').value = vm.discount;
+            document.getElementById('discount-value').textContent = vm.discount;
+
+            // Set selects
+            document.getElementById('backup').value = vm.backup;
+            document.getElementById('os').value = vm.os;
+            document.getElementById('database').value = vm.database;
+            document.getElementById('waf').value = vm.waf;
+
+            // Set toggles
+            document.getElementById('antivirus').checked = vm.antivirus;
+            document.getElementById('tsplus-enabled').checked = vm.tsplus.enabled;
+            document.getElementById('tsplus-users').value = vm.tsplus.users;
+            document.getElementById('tsplus-options').style.display = vm.tsplus.enabled ? 'block' : 'none';
+            document.getElementById('thinprint').checked = vm.thinprint;
+
+            // Update slider fills
+            document.querySelectorAll('.modern-slider').forEach(updateSliderFill);
+            
+            updateCostCalculation();
+        }
+
+        // Delete VM
+        function deleteVM(id, event) {
+            event.stopPropagation();
+            
+            if (state.vms.length === 1) {
+                alert('Você deve ter pelo menos uma VM configurada.');
+                return;
+            }
+
+            if (confirm('Tem certeza que deseja excluir esta VM?')) {
+                state.vms = state.vms.filter(vm => vm.id !== id);
+                
+                if (state.selectedVMId === id) {
+                    state.selectedVMId = state.vms[0].id;
+                    loadVMData(state.vms[0]);
+                }
+                
+                renderVMList();
+                saveState();
+            }
+        }
+
+        // Calculate VM Cost
+        function calculateVMCost() {
+            const vcpu = parseInt(document.getElementById('vcpu').value);
+            const ram = parseInt(document.getElementById('ram').value);
+            const ssd = parseInt(document.getElementById('ssd').value);
+            const fcm = parseInt(document.getElementById('fcm').value);
+            const backupType = document.getElementById('backup').value;
+            const os = document.getElementById('os').value;
+            const database = document.getElementById('database').value;
+            const discount = parseInt(document.getElementById('discount').value);
+
+            // Infrastructure costs
+            const vcpuCost = vcpu * pricing.vcpuHour * pricing.hoursMonth;
+            const ramCost = ram * pricing.ramHour * pricing.hoursMonth;
+            
+            // Storage and backup
+            const storageCost = (ssd * pricing.ssdGB) + (fcm * pricing.fcmGB);
+            let backupCost = 0;
+            const totalStorage = ssd + fcm;
+            
+            if (backupType === 'padrao') {
+                backupCost = totalStorage * pricing.backupPadrao;
+            } else if (backupType === 'duplo') {
+                backupCost = totalStorage * (pricing.backupPadrao + pricing.backupDuplo);
+            } else if (backupType === 'triplo') {
+                backupCost = totalStorage * (pricing.backupPadrao + pricing.backupDuplo + pricing.backupTriplo);
+            }
+
+            // OS costs
+            let osCost = 0;
+            if (os.includes('windows')) {
+                osCost = Math.ceil(vcpu / 2) * 55;
+                // Auto-enable antivirus for Windows
+                document.getElementById('antivirus').checked = true;
+            } else if (os === 'rhel') {
+                osCost = 1200;
+            } else if (os === 'suse') {
+                osCost = 900;
+            }
+
+            // Database costs
+            let dbCost = 0;
+            if (database === 'sqlserver-web') {
+                dbCost = Math.ceil(vcpu / 2) * 180;
+            } else if (database === 'sqlserver-standard') {
+                dbCost = Math.ceil(vcpu / 2) * 800;
+            } else if (database === 'sqlserver-enterprise') {
+                dbCost = Math.ceil(vcpu / 2) * 2340;
+            } else if (database === 'oracle-se2') {
+                dbCost = Math.ceil(vcpu / 2) * 1560;
+            } else if (database === 'oracle-ee') {
+                dbCost = Math.ceil(vcpu / 2) * 7800;
+            } else if (database === 'oracle-rac') {
+                dbCost = Math.ceil(vcpu / 2) * 15600;
+            } else if (database === 'redis') {
+                dbCost = 890;
+            } else if (database === 'datastax') {
+                dbCost = 1500;
+            }
+
+            // Additional licenses
+            let licensesCost = 0;
+            
+            if (document.getElementById('antivirus').checked) {
+                licensesCost += pricing.antivirus;
+            }
+            
+            if (document.getElementById('tsplus-enabled').checked) {
+                const users = document.getElementById('tsplus-users').value;
+                licensesCost += pricing.tsplus[users];
+            }
+            
+            if (document.getElementById('thinprint').checked) {
+                licensesCost += pricing.thinprint;
+            }
+            
+            const ips = parseInt(document.getElementById('ips').value);
+            licensesCost += ips * pricing.ipAdicional;
+            
+            const waf = document.getElementById('waf').value;
+            licensesCost += pricing.waf[waf];
+
+            // Calculate totals
+            const infrastructureCost = vcpuCost + ramCost + storageCost + backupCost + pricing.monitoring;
+            const discountAmount = infrastructureCost * (discount / 100);
+            const totalCost = (infrastructureCost - discountAmount) + osCost + dbCost + licensesCost;
+
+            return {
+                vcpu: vcpuCost,
+                ram: ramCost,
+                storage: storageCost + backupCost,
+                os: osCost,
+                database: dbCost,
+                licenses: licensesCost,
+                discount: discountAmount,
+                total: totalCost
+            };
+        }
+
+        // Update cost calculation and display
+        function updateCostCalculation() {
+            const costs = calculateVMCost();
+            
+            // Update breakdown
+            document.getElementById('cost-vcpu').textContent = `R$ ${costs.vcpu.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+            document.getElementById('cost-ram').textContent = `R$ ${costs.ram.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+            document.getElementById('cost-storage').textContent = `R$ ${costs.storage.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+            document.getElementById('cost-os').textContent = `R$ ${costs.os.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+            document.getElementById('cost-db').textContent = `R$ ${costs.database.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+            document.getElementById('cost-licenses').textContent = `R$ ${costs.licenses.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+            
+            // Show/hide discount
+            const discountRow = document.getElementById('discount-row');
+            if (costs.discount > 0) {
+                discountRow.style.display = 'flex';
+                document.getElementById('cost-discount').textContent = `- R$ ${costs.discount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+            } else {
+                discountRow.style.display = 'none';
+            }
+            
+            // Update total
+            document.getElementById('total-cost').textContent = `R$ ${costs.total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+            
+            // Update market comparison
+            updateMarketComparison(costs.total);
+            
+            // Auto-save current VM
+            if (state.selectedVMId) {
+                saveCurrentVMData();
+            }
+        }
+
+        // Save current VM data
+        function saveCurrentVMData() {
+            const vm = state.vms.find(v => v.id === state.selectedVMId);
+            if (!vm) return;
+
+            const costs = calculateVMCost();
+            
+            vm.vcpu = parseInt(document.getElementById('vcpu').value);
+            vm.ram = parseInt(document.getElementById('ram').value);
+            vm.ssd = parseInt(document.getElementById('ssd').value);
+            vm.fcm = parseInt(document.getElementById('fcm').value);
+            vm.backup = document.getElementById('backup').value;
+            vm.os = document.getElementById('os').value;
+            vm.database = document.getElementById('database').value;
+            vm.antivirus = document.getElementById('antivirus').checked;
+            vm.tsplus = {
+                enabled: document.getElementById('tsplus-enabled').checked,
+                users: document.getElementById('tsplus-users').value
+            };
+            vm.thinprint = document.getElementById('thinprint').checked;
+            vm.ips = parseInt(document.getElementById('ips').value);
+            vm.waf = document.getElementById('waf').value;
+            vm.discount = parseInt(document.getElementById('discount').value);
+            vm.cost = costs.total;
+
+            renderVMList();
+            saveState();
+        }
+
+        // Save VM
+        function saveVM() {
+            saveCurrentVMData();
+            showNotification('Configuração salva com sucesso!');
+        }
+
+        // Update total cost display
+        function updateTotalCost() {
+            const total = state.vms.reduce((sum, vm) => sum + vm.cost, 0);
+            // Update total cost display in header or summary
+        }
+
+        // Update market comparison
+        function updateMarketComparison(opticloudCost) {
+            const providers = [
+                { name: 'OptiCloud', cost: opticloudCost, color: '#DCAE1D' },
+                { name: 'AWS', cost: opticloudCost * 1.499, color: '#FF9900' },
+                { name: 'Azure', cost: opticloudCost * 1.332, color: '#0078D4' },
+                { name: 'Google Cloud', cost: opticloudCost * 1.05, color: '#4285F4' },
+                { name: 'Oracle Cloud', cost: opticloudCost * 0.98, color: '#F80000' }
+            ];
+
+            const container = document.getElementById('provider-comparison');
+            container.innerHTML = '';
+
+            providers.sort((a, b) => a.cost - b.cost);
+
+            providers.forEach((provider, index) => {
+                const savings = ((providers[providers.length - 1].cost - provider.cost) / providers[providers.length - 1].cost * 100).toFixed(1);
+                
+                const card = document.createElement('div');
+                card.className = `provider-card ${provider.name === 'OptiCloud' ? 'best-price glow-effect' : ''}`;
+                
+                card.innerHTML = `
+                    <div class="provider-logo" style="color: ${provider.color}">${provider.name}</div>
+                    <div class="provider-price">R$ ${provider.cost.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</div>
+                    ${index === 0 ? '<div class="provider-savings">🏆 Melhor Preço!</div>' : `<div class="provider-savings">Economia: ${savings}%</div>`}
+                `;
+                
+                container.appendChild(card);
+            });
+        }
+
+        // Show notification
+        function showNotification(message) {
+            // Simple notification implementation
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: var(--gold);
+                color: var(--black);
+                padding: 1rem 2rem;
+                border-radius: 10px;
+                font-weight: 600;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+                animation: slideIn 0.3s ease-out;
+                z-index: 10000;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Save state to localStorage
+        function saveState() {
+            localStorage.setItem('opticloud-state', JSON.stringify(state));
+        }
+
+        // Load state from localStorage
+        function loadState() {
+            try {
+                const saved = localStorage.getItem('opticloud-state');
+                if (saved) {
+                    const loadedState = JSON.parse(saved);
+                    // Validate loaded state
+                    if (loadedState && loadedState.vms && Array.isArray(loadedState.vms)) {
+                        state = loadedState;
+                        renderVMList();
+                        if (state.selectedVMId) {
+                            const vm = state.vms.find(v => v.id === state.selectedVMId);
+                            if (vm) {
+                                loadVMData(vm);
+                            }
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading state:', error);
+                // Reset to default state if loading fails
+                state = {
+                    vms: [],
+                    selectedVMId: null,
+                    currentPage: 'calculator'
+                };
+            }
+        }
+
+        // Export PDF
+        function exportPDF() {
+            showNotification('Gerando PDF da proposta...');
+            // PDF generation logic would go here
+        }
+
+        // Toggle mobile menu
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('open');
+        }
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(e) {
+            const sidebar = document.getElementById('sidebar');
+            const menuToggle = document.querySelector('.mobile-menu-toggle');
+            
+            if (window.innerWidth <= 768 && 
+                sidebar.classList.contains('open') && 
+                !sidebar.contains(e.target) && 
+                !menuToggle.contains(e.target)) {
+                sidebar.classList.remove('open');
+            }
+        });
+
+        // Pool de Recursos Functions
+        let poolState = {
+            vcpus: 100,
+            ram: 200,
+            ssd: 0,
+            fcm: 5000,
+            vms: 50,
+            backup: 'padrao',
+            licenses: {
+                windows: 0,
+                rhel: 0,
+                suse: 0,
+                antivirus: 0,
+                sqlserver: 0,
+                ips: 0
+            }
+        };
+
+        function updatePoolLicense(type, delta) {
+            const countElement = document.getElementById(`pool-${type}-count`);
+            let current = parseInt(countElement.textContent);
+            current = Math.max(0, current + delta);
+            
+            // Validate against VM count for certain licenses
+            if (type === 'antivirus' || type === 'windows') {
+                const maxVMs = parseInt(document.getElementById('pool-vms').value);
+                current = Math.min(current, maxVMs);
+            }
+            
+            countElement.textContent = current;
+            poolState.licenses[type] = current;
+            updatePoolCost();
+        }
+
+        // Initialize Pool sliders
+        function initializePoolSliders() {
+            document.querySelectorAll('#pool-page .modern-slider').forEach(slider => {
+                slider.addEventListener('input', function() {
+                    const valueSpan = document.getElementById(this.id + '-value');
+                    if (valueSpan) {
+                        valueSpan.textContent = this.value;
+                    }
+                    updatePoolCost();
+                    updateSliderFill(this);
+                });
+            });
+
+            // Pool backup type
+            document.querySelectorAll('input[name="pool-backup"]').forEach(radio => {
+                radio.addEventListener('change', updatePoolCost);
+            });
+        }
+
+        function updatePoolCost() {
+            // Get values
+            const vcpus = parseInt(document.getElementById('pool-vcpu').value);
+            const ram = parseInt(document.getElementById('pool-ram').value);
+            const ssd = parseInt(document.getElementById('pool-ssd').value);
+            const fcm = parseInt(document.getElementById('pool-fcm').value);
+            const vms = parseInt(document.getElementById('pool-vms').value);
+            const backup = document.querySelector('input[name="pool-backup"]:checked').value;
+
+            // Update state
+            poolState.vcpus = vcpus;
+            poolState.ram = ram;
+            poolState.ssd = ssd;
+            poolState.fcm = fcm;
+            poolState.vms = vms;
+            poolState.backup = backup;
+
+            // Calculate infrastructure
+            const vcpuCost = vcpus * pricing.vcpuHour * pricing.hoursMonth;
+            const ramCost = ram * pricing.ramHour * pricing.hoursMonth;
+            const storageCost = (ssd * pricing.ssdGB) + (fcm * pricing.fcmGB);
+            
+            // Backup calculation
+            let backupCost = 0;
+            const totalStorage = ssd + fcm;
+            if (backup === 'padrao') {
+                backupCost = totalStorage * pricing.backupPadrao;
+            } else if (backup === 'duplo') {
+                backupCost = totalStorage * (pricing.backupPadrao + pricing.backupDuplo);
+            } else if (backup === 'triplo') {
+                backupCost = totalStorage * (pricing.backupPadrao + pricing.backupDuplo + pricing.backupTriplo);
+            }
+
+            const monitoringCost = vms * pricing.monitoring;
+            
+            // Calculate licenses
+            let licenseCost = 0;
+            licenseCost += poolState.licenses.windows * 55;
+            licenseCost += poolState.licenses.rhel * 1200;
+            licenseCost += poolState.licenses.suse * 900;
+            licenseCost += poolState.licenses.antivirus * 55;
+            licenseCost += poolState.licenses.sqlserver * 800;
+            licenseCost += poolState.licenses.ips * 70;
+
+            const infraCost = vcpuCost + ramCost + storageCost + backupCost + monitoringCost;
+            const totalCost = infraCost + licenseCost;
+
+            // Update summary
+            document.getElementById('summary-vcpus').textContent = `${vcpus} cores`;
+            document.getElementById('summary-ram').textContent = `${ram} GB`;
+            document.getElementById('summary-storage').textContent = `${totalStorage} GB`;
+            document.getElementById('summary-vms').textContent = vms;
+            
+            document.getElementById('pool-infra-cost').textContent = 
+                `R$ ${infraCost.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+            document.getElementById('pool-license-cost').textContent = 
+                `R$ ${licenseCost.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+            document.getElementById('pool-total-cost').textContent = 
+                `R$ ${totalCost.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+        }
+
+        // Upgrades Functions
+        let cart = [];
+
+        function addToCart(itemId, price, name) {
+            // Check if item already in cart
+            const existingItem = cart.find(item => item.id === itemId);
+            
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({
+                    id: itemId,
+                    name: name,
+                    price: price,
+                    quantity: 1
+                });
+            }
+            
+            updateCart();
+            showNotification(`${name} adicionado ao carrinho!`);
+        }
+
+        function updateCart() {
+            const cartContainer = document.getElementById('cart-items');
+            const cartSummary = document.querySelector('.cart-summary');
+            
+            if (cart.length === 0) {
+                cartContainer.innerHTML = '<p style="text-align: center; color: rgba(255,255,255,0.5);">Seu carrinho está vazio</p>';
+                cartSummary.style.display = 'none';
+                return;
+            }
+            
+            cartSummary.style.display = 'block';
+            
+            let total = 0;
+            let html = '';
+            
+            cart.forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                total += itemTotal;
+                
+                html += `
+                    <div class="cart-item">
+                        <div>
+                            <div class="cart-item-name">${item.name}</div>
+                            <div class="cart-item-details">
+                                <div class="cart-item-quantity">
+                                    <button class="counter-btn" onclick="updateCartItem('${item.id}', -1)">-</button>
+                                    <span>${item.quantity}</span>
+                                    <button class="counter-btn" onclick="updateCartItem('${item.id}', 1)">+</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <div class="cart-item-price">
+                                R$ ${itemTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                            </div>
+                            <button class="remove-item" onclick="removeFromCart('${item.id}')">🗑️</button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            cartContainer.innerHTML = html;
+            document.getElementById('cart-total').textContent = 
+                `R$ ${total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+        }
+
+        function updateCartItem(itemId, delta) {
+            const item = cart.find(i => i.id === itemId);
+            if (item) {
+                item.quantity = Math.max(1, item.quantity + delta);
+                updateCart();
+            }
+        }
+
+        function removeFromCart(itemId) {
+            cart = cart.filter(item => item.id !== itemId);
+            updateCart();
+        }
+
+        function clearCart() {
+            if (confirm('Tem certeza que deseja limpar o carrinho?')) {
+                cart = [];
+                updateCart();
+            }
+        }
+
+        function generateUpgradesPDF() {
+            showNotification('Gerando PDF dos upgrades...');
+            // PDF generation logic
+        }
+
+        function copyCartSummary() {
+            let summary = 'RESUMO DE UPGRADES OPTICLOUD\n\n';
+            let total = 0;
+            
+            cart.forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                total += itemTotal;
+                summary += `${item.name}: ${item.quantity}x = R$ ${itemTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}\n`;
+            });
+            
+            summary += `\nTOTAL MENSAL: R$ ${total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+            
+            navigator.clipboard.writeText(summary);
+            showNotification('Resumo copiado para a área de transferência!');
+        }
+
+        // Proposals Functions
+        let proposals = JSON.parse(localStorage.getItem('opticloud-proposals') || '[]');
+
+        function updateProposalCounts() {
+            const active = proposals.filter(p => p.status === 'active').length;
+            const archived = proposals.filter(p => p.status === 'archived').length;
+            
+            document.getElementById('active-count').textContent = active;
+            document.getElementById('archived-count').textContent = archived;
+        }
+
+        function switchProposalTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            if (tab === 'active') {
+                document.getElementById('active-proposals').style.display = 'grid';
+                document.getElementById('archived-proposals').style.display = 'none';
+            } else {
+                document.getElementById('active-proposals').style.display = 'none';
+                document.getElementById('archived-proposals').style.display = 'grid';
+            }
+        }
+
+        function createNewProposal() {
+            document.getElementById('proposal-modal').style.display = 'flex';
+        }
+
+        function closeProposalModal() {
+            document.getElementById('proposal-modal').style.display = 'none';
+            // Clear form
+            document.getElementById('client-name').value = '';
+            document.getElementById('commercial-contact').value = '';
+            document.getElementById('client-email').value = '';
+            document.getElementById('client-phone').value = '';
+            document.getElementById('technical-contact').value = '';
+            document.getElementById('proposal-notes').value = '';
+        }
+
+        function saveProposal() {
+            const proposal = {
+                id: generateId(),
+                clientName: document.getElementById('client-name').value,
+                commercialContact: document.getElementById('commercial-contact').value,
+                email: document.getElementById('client-email').value,
+                phone: document.getElementById('client-phone').value,
+                technicalContact: document.getElementById('technical-contact').value,
+                validity: document.getElementById('proposal-validity').value,
+                notes: document.getElementById('proposal-notes').value,
+                status: 'active',
+                createdAt: new Date().toISOString(),
+                vms: [...state.vms],
+                totalValue: state.vms.reduce((sum, vm) => sum + vm.cost, 0)
+            };
+            
+            proposals.push(proposal);
+            localStorage.setItem('opticloud-proposals', JSON.stringify(proposals));
+            
+            renderProposals();
+            closeProposalModal();
+            showNotification('Proposta criada com sucesso!');
+        }
+
+        function renderProposals() {
+            const activeContainer = document.getElementById('active-proposals');
+            const archivedContainer = document.getElementById('archived-proposals');
+            
+            activeContainer.innerHTML = '';
+            archivedContainer.innerHTML = '';
+            
+            proposals.forEach(proposal => {
+                const card = createProposalCard(proposal);
+                
+                if (proposal.status === 'active') {
+                    activeContainer.appendChild(card);
+                } else {
+                    archivedContainer.appendChild(card);
+                }
+            });
+            
+            updateProposalCounts();
+        }
+
+        function createProposalCard(proposal) {
+            const card = document.createElement('div');
+            card.className = 'proposal-card';
+            
+            const createdDate = new Date(proposal.createdAt).toLocaleDateString('pt-BR');
+            const validUntil = new Date(proposal.createdAt);
+            validUntil.setDate(validUntil.getDate() + parseInt(proposal.validity));
+            
+            card.innerHTML = `
+                <div class="proposal-header">
+                    <div>
+                        <div class="proposal-client">${proposal.clientName}</div>
+                        <div class="proposal-id">ID: ${proposal.id}</div>
+                    </div>
+                    <span class="proposal-status status-${proposal.status}">
+                        ${proposal.status === 'active' ? 'Ativa' : 'Arquivada'}
+                    </span>
+                </div>
+                
+                <div class="proposal-details">
+                    <div class="proposal-info">
+                        <span class="proposal-info-icon">👤</span>
+                        ${proposal.commercialContact}
+                    </div>
+                    <div class="proposal-info">
+                        <span class="proposal-info-icon">📅</span>
+                        Criada em ${createdDate}
+                    </div>
+                    <div class="proposal-info">
+                        <span class="proposal-info-icon">⏰</span>
+                        Válida até ${validUntil.toLocaleDateString('pt-BR')}
+                    </div>
+                    <div class="proposal-info">
+                        <span class="proposal-info-icon">🖥️</span>
+                        ${proposal.vms.length} VMs configuradas
+                    </div>
+                </div>
+                
+                <div class="proposal-value">
+                    R$ ${proposal.totalValue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                </div>
+                
+                <div class="proposal-actions">
+                    <button onclick="viewProposal('${proposal.id}')">Visualizar</button>
+                    <button onclick="editProposal('${proposal.id}')">Editar</button>
+                    ${proposal.status === 'active' ? 
+                        `<button onclick="archiveProposal('${proposal.id}')">Arquivar</button>` : 
+                        `<button onclick="activateProposal('${proposal.id}')">Ativar</button>`
+                    }
+                </div>
+            `;
+            
+            return card;
+        }
+
+        function viewProposal(id) {
+            const proposal = proposals.find(p => p.id === id);
+            if (proposal) {
+                showNotification('Visualizando proposta...');
+                // Open proposal view
+            }
+        }
+
+        function editProposal(id) {
+            const proposal = proposals.find(p => p.id === id);
+            if (proposal) {
+                // Load proposal data into state
+                state.vms = [...proposal.vms];
+                state.selectedVMId = proposal.vms[0]?.id;
+                
+                // Switch to calculator page
+                navigate.calculator();
+                renderVMList();
+                
+                if (state.selectedVMId) {
+                    const vm = state.vms.find(v => v.id === state.selectedVMId);
+                    if (vm) loadVMData(vm);
+                }
+                
+                showNotification('Proposta carregada para edição');
+            }
+        }
+
+        function archiveProposal(id) {
+            const proposal = proposals.find(p => p.id === id);
+            if (proposal) {
+                proposal.status = 'archived';
+                localStorage.setItem('opticloud-proposals', JSON.stringify(proposals));
+                renderProposals();
+                showNotification('Proposta arquivada');
+            }
+        }
+
+        function activateProposal(id) {
+            const proposal = proposals.find(p => p.id === id);
+            if (proposal) {
+                proposal.status = 'active';
+                localStorage.setItem('opticloud-proposals', JSON.stringify(proposals));
+                renderProposals();
+                showNotification('Proposta ativada');
+            }
+        }
+
+        function savePoolConfig() {
+            showNotification('Gerando PDF do Pool de Recursos...');
+            // PDF generation logic
+        }
+
+        function createPoolProposal() {
+            // Create proposal from pool configuration
+            const poolProposal = {
+                id: generateId(),
+                type: 'pool',
+                ...poolState,
+                totalValue: parseFloat(document.getElementById('pool-total-cost').textContent.replace('R$ ', '').replace('.', '').replace(',', '.'))
+            };
+            
+            showNotification('Proposta do Pool criada!');
+        }
+
+        // Modal click outside close
+        const proposalModal = document.getElementById('proposal-modal');
+        if (proposalModal) {
+            proposalModal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeProposalModal();
+                }
+            });
+        }
+
+        // Add page load animations
+        window.addEventListener('load', () => {
+            document.querySelectorAll('.fade-in').forEach((el, index) => {
+                setTimeout(() => {
+                    el.style.opacity = '1';
+                }, index * 100);
+            });
+        });
+
+        // Add CSS animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            
+            @keyframes slideOut {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Export functions for debugging
+        window.OptiCloud = {
+            showPage: showPage,
+            state: state,
+            navigate: navigate,
+            debugInfo: function() {
+                console.log('Current state:', state);
+                console.log('Pages found:', document.querySelectorAll('.page').length);
+                console.log('Current page display status:');
+                document.querySelectorAll('.page').forEach(p => {
+                    console.log(`- ${p.id}: ${p.style.display || 'none'}`);
+                });
+            }
+        };
+
+        console.log('✅ OptiCloud loaded successfully!');
+        console.log('Use navigate.pool(), navigate.upgrades(), etc. to navigate between pages');
+    </script>
+</body>
+</html>
